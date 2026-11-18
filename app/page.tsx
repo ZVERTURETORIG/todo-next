@@ -121,7 +121,7 @@ export default function Home() {
   const visibleTasks = tasks.filter((task) => {
     const matchesFilter =
       filter === "all" ||
-      (filter === "active" && !task.don) ||
+      (filter === "active" && !task.done) ||
       (filter === "completed" && task.done);
     const matchesSearch = task.text.toLocaleLowerCase("ru").includes(normalizedQuery);
     return matchesFilter && matchesSearch;
