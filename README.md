@@ -35,3 +35,11 @@ npm run dev
 ## Технологии
 
 Next.js App Router, React, TypeScript и обычный CSS.
+
+## Ошибки TypeScript (ветка `types-homework`)
+
+| Текст ошибки | Перевод своими словами | В чём причина |
+| --- | --- | --- |
+| `TS2551: Property 'don' does not exist on type 'Task'. Did you mean 'done'?` | У задачи нет свойства `don`; TypeScript подсказывает похожее имя `done`. | В названии свойства допущена опечатка: написано `don` вместо `done`. |
+| `TS2345: Argument of type '"all-tasks"' is not assignable to parameter of type 'SetStateAction<Filter>'.` | Строку `all-tasks` нельзя присвоить фильтру типа `Filter`. | Тип `Filter` разрешает только значения `all`, `active` и `completed`. |
+| `TS2345: Argument of type 'Task' is not assignable to parameter of type 'string'.` | Функция ожидала строку, но получила целый объект задачи. | В `deleteTask` передали `task`, хотя функция принимает строковый `task.id`. |
