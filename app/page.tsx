@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 type Task = {
   id: string;
@@ -28,6 +28,7 @@ export default function Home() {
   const [filter, setFilter] = useState<Filter>("all");
   const [newTask, setNewTask] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
@@ -52,6 +53,18 @@ export default function Home() {
     if (!isLoaded) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }, [isLoaded, tasks]);
+
+  useEffect(() => {
+    const focusSearch = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", focusSearch);
+    return () => window.removeEventListener("keydown", focusSearch);
+  }, []);
 
   const addTask = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -155,6 +168,7 @@ export default function Home() {
           <span className="search-icon" aria-hidden="true">⌕</span>
           <label className="visually-hidden" htmlFor="task-search">Поиск задач</label>
           <input
+            ref={searchInputRef}
             id="task-search"
             type="search"
             placeholder="Найти задачу"
