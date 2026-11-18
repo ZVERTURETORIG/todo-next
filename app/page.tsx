@@ -78,6 +78,10 @@ export default function Home() {
     setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
   };
 
+  const clearCompleted = () => {
+    setTasks((currentTasks) => currentTasks.filter((task) => !task.done));
+  };
+
   const beginEditing = (task: Task) => {
     setEditingId(task.id);
     setEditText(task.text);
@@ -182,6 +186,11 @@ export default function Home() {
               </button>
             ))}
           </div>
+          {tasks.some((task) => task.done) && (
+            <button className="filter-button" type="button" onClick={clearCompleted}>
+              Убрать готовые
+            </button>
+          )}
         </div>
 
         {tasks.length === 0 && !normalizedQuery ? (
