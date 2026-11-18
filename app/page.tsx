@@ -1,6 +1,56 @@
-const filters = ["Все", "Активные", "Выполненные"];
+"use client";
+
+import { useState, type FormEvent } from "react";
+
+type Task = {
+  id: string;
+  text: string;
+  done: boolean;
+};
+
+type Filter = "all" | "active" | "completed";
+
+const filters: { label: string; value: Filter }[] = [
+  { label: "Все", value: "all" },
+  { label: "Активные", value: "active" },
+  { label: "Выполненные", value: "completed" },
+];
 
 export default function Home() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [newTask, setNewTask] = useState("");
+
+  const addTask = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = newTask.trim();
+    if (!text) return;
+
+    setTasks((currentTasks) => [
+      ...currentTasks,
+      { id: crypto.randomUUID(), text, done: false },
+    ]);
+    setNewTask("");
+  };
+
+  const toggleTask = (id: string) => {
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task,
+      ),
+    );
+  };
+
+  const deleteTask = (id: string) => {
+    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+  };
+
+  const visibleTasks = tasks.filter((task) => {
+    if (filter === "active") return !task.done;
+    if (filter === "completed") return task.done;
+    return true;
+  });
+
   return (
     <main className="page-shell">
       <header className="site-header">
@@ -23,35 +73,68 @@ export default function Home() {
             <p className="eyebrow">СПИСОК НА СЕГОДНЯ</p>
             <h2 id="tasks-heading">Мои задачи</h2>
           </div>
-          <span className="task-count">0 задач</span>
+          <span className="task-count">{tasks.length} задач</span>
         </div>
 
-        <form className="task-form">
+        <form className="task-form" onSubmit={addTask}>
           <label className="visually-hidden" htmlFor="new-task">Новая задача</label>
-          <input id="new-task" name="task" placeholder="Что нужно сделать?" />
-          <button className="add-button" type="button"><span aria-hidden="true">+</span> Добавить</button>
+          <input
+            id="new-task"
+            name="task"
+            placeholder="Что нужно сделать?"
+            value={newTask}
+            onChange={(event) => setNewTask(event.target.value)}
+          />
+          <button className="add-button" type="submit"><span aria-hidden="true">+</span> Добавить</button>
         </form>
 
         <div className="list-toolbar">
           <div className="filter-list" aria-label="Фильтр задач">
-            {filters.map((filter, index) => (
-              <button className={`filter-button${index === 0 ? " is-active" : ""}`} key={filter} type="button">
-                {filter}
+            {filters.map((item) => (
+              <button
+                className={`filter-button${filter === item.value ? " is-active" : ""}`}
+                key={item.value}
+                type="button"
+                onClick={() => setFilter(item.value)}
+              >
+                {item.label}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="empty-state">
-          <div className="empty-art" aria-hidden="true">
-            <span className="empty-sun" />
-            <span className="empty-card empty-card-back" />
-            <span className="empty-card empty-card-front"><i /><i /><i /></span>
-            <span className="empty-spark">✳</span>
+        {tasks.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-art" aria-hidden="true">
+              <span className="empty-sun" />
+              <span className="empty-card empty-card-back" />
+              <span className="empty-card empty-card-front"><i /><i /><i /></span>
+              <span className="empty-spark">✳</span>
+            </div>
+            <h3>Начни с небольшой задачи</h3>
+            <p>Добавь первое дело — дальше будет проще.</p>
           </div>
-          <h3>Начни с небольшой задачи</h3>
-          <p>Добавь первое дело — дальше будет проще.</p>
-        </div>
+        ) : visibleTasks.length === 0 ? (
+          <div className="empty-result">В этом фильтре пока нет задач.</div>
+        ) : (
+          <ul className="task-list">
+            {visibleTasks.map((task) => (
+              <li className="task-row" key={task.id}>
+                <button
+                  className={`check-button${task.done ? " is-checked" : ""}`}
+                  type="button"
+                  aria-label={task.done ? `Вернуть задачу: ${task.text}` : `Выполнить задачу: ${task.text}`}
+                  aria-pressed={task.done}
+                  onClick={() => toggleTask(task.id)}
+                >
+                  {task.done ? "✓" : ""}
+                </button>
+                <span className={`task-text${task.done ? " is-done" : ""}`}>{task.text}</span>
+                <button className="delete-button" type="button" aria-label={`Удалить задачу: ${task.text}`} onClick={() => deleteTask(task.id)}>×</button>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <footer className="panel-footer">
           <span className="privacy-dot" aria-hidden="true" />
