@@ -27,6 +27,7 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [newTask, setNewTask] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
@@ -99,10 +100,14 @@ export default function Home() {
     setEditText("");
   };
 
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase("ru");
   const visibleTasks = tasks.filter((task) => {
-    if (filter === "active") return !task.done;
-    if (filter === "completed") return task.done;
-    return true;
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "active" && !task.done) ||
+      (filter === "completed" && task.done);
+    const matchesSearch = task.text.toLocaleLowerCase("ru").includes(normalizedQuery);
+    return matchesFilter && matchesSearch;
   });
 
   return (
@@ -142,6 +147,28 @@ export default function Home() {
           <button className="add-button" type="submit"><span aria-hidden="true">+</span> Добавить</button>
         </form>
 
+        <div className="search-box" role="search">
+          <span className="search-icon" aria-hidden="true">⌕</span>
+          <label className="visually-hidden" htmlFor="task-search">Поиск задач</label>
+          <input
+            id="task-search"
+            type="search"
+            placeholder="Найти задачу"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          <button
+            className="clear-search"
+            type="button"
+            aria-label="Очистить поиск"
+            title="Очистить поиск"
+            disabled={!searchQuery}
+            onClick={() => setSearchQuery("")}
+          >
+            ×
+          </button>
+        </div>
+
         <div className="list-toolbar">
           <div className="filter-list" aria-label="Фильтр задач">
             {filters.map((item) => (
@@ -157,7 +184,7 @@ export default function Home() {
           </div>
         </div>
 
-        {tasks.length === 0 ? (
+        {tasks.length === 0 && !normalizedQuery ? (
           <div className="empty-state">
             <div className="empty-art" aria-hidden="true">
               <span className="empty-sun" />
@@ -168,6 +195,8 @@ export default function Home() {
             <h3>Начни с небольшой задачи</h3>
             <p>Добавь первое дело — дальше будет проще.</p>
           </div>
+        ) : visibleTasks.length === 0 && normalizedQuery ? (
+          <div className="empty-result" role="status">По запросу „{searchQuery.trim()}“ ничего не найдено</div>
         ) : visibleTasks.length === 0 ? (
           <div className="empty-result">В этом фильтре пока нет задач.</div>
         ) : (

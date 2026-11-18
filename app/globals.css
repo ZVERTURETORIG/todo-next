@@ -86,6 +86,15 @@ button { cursor: pointer; }
 .add-button:hover { transform: translateY(-1px); background: var(--green-dark); }
 .add-button span { padding-right: 4px; font-size: 17px; vertical-align: -1px; }
 
+.search-box { display: flex; align-items: center; gap: 9px; margin: 14px 34px 0; border: 1px solid #edf0ed; border-radius: 11px; padding: 8px 11px; background: #fff; }
+.search-icon { color: #9aa59d; font-size: 20px; line-height: 1; }
+.search-box input { min-width: 0; flex: 1; border: 0; outline: none; background: transparent; color: var(--ink); font-size: 12px; }
+.search-box input::placeholder { color: #a7b0a9; }
+.search-box input::-webkit-search-cancel-button { display: none; }
+.clear-search { width: 25px; height: 25px; border: 0; border-radius: 7px; background: #f2f5f1; color: #748077; font-size: 19px; line-height: 1; transition: background 150ms ease, color 150ms ease; }
+.clear-search:hover:not(:disabled) { background: #e6eee7; color: var(--green); }
+.clear-search:disabled { cursor: default; opacity: 0.4; }
+
 .list-toolbar { justify-content: space-between; margin: 25px 34px 0; border-bottom: 1px solid var(--line); }
 .filter-list { display: flex; gap: 20px; }
 .filter-button { position: relative; border: 0; padding: 0 0 13px; background: transparent; color: #8a958e; font-size: 12px; }
@@ -130,6 +139,7 @@ button { cursor: pointer; }
   .intro-copy { font-size: 13px; }
   .panel-heading { padding: 24px 20px 18px; }
   .task-form { margin: 0 18px; }
+  .search-box { margin-right: 18px; margin-left: 18px; }
   .add-button { padding: 10px 11px; }
   .list-toolbar { margin: 23px 20px 0; }
   .filter-list { gap: 16px; }
