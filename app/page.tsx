@@ -28,6 +28,8 @@ export default function Home() {
   const [filter, setFilter] = useState<Filter>("all");
   const [newTask, setNewTask] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
 
   useEffect(() => {
     try {
@@ -73,6 +75,28 @@ export default function Home() {
   const deleteTask = (id: string) => {
     if (!confirm("Удалить задачу?")) return;
     setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+  };
+
+  const beginEditing = (task: Task) => {
+    setEditingId(task.id);
+    setEditText(task.text);
+  };
+
+  const saveEditing = () => {
+    if (!editingId) return;
+    const text = editText.trim();
+    if (text) {
+      setTasks((currentTasks) =>
+        currentTasks.map((task) => task.id === editingId ? { ...task, text } : task),
+      );
+    }
+    setEditingId(null);
+    setEditText("");
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditText("");
   };
 
   const visibleTasks = tasks.filter((task) => {
@@ -159,7 +183,31 @@ export default function Home() {
                 >
                   {task.done ? "✓" : ""}
                 </button>
-                <span className={`task-text${task.done ? " is-done" : ""}`}>{task.text}</span>
+                {editingId === task.id ? (
+                  <input
+                    className="edit-input"
+                    autoFocus
+                    value={editText}
+                    aria-label={`Новый текст задачи: ${task.text}`}
+                    onChange={(event) => setEditText(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        saveEditing();
+                      }
+                      if (event.key === "Escape") cancelEditing();
+                    }}
+                  />
+                ) : (
+                  <button
+                    className={`task-text task-text-button${task.done ? " is-done" : ""}`}
+                    type="button"
+                    title="Двойной щелчок для редактирования"
+                    onDoubleClick={() => beginEditing(task)}
+                  >
+                    {task.text}
+                  </button>
+                )}
                 <button className="delete-button" type="button" aria-label={`Удалить задачу: ${task.text}`} onClick={() => deleteTask(task.id)}>×</button>
               </li>
             ))}
