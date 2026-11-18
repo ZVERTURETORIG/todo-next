@@ -71,6 +71,7 @@ export default function Home() {
   };
 
   const deleteTask = (id: string) => {
+    if (!confirm("Удалить задачу?")) return;
     setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
   };
 
