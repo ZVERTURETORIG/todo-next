@@ -132,7 +132,7 @@ export default function Home() {
             <p className="eyebrow">СПИСОК НА СЕГОДНЯ</p>
             <h2 id="tasks-heading">Мои задачи</h2>
           </div>
-          <span className="task-count">{tasks.length} задач</span>
+          <span className="task-count">Выполнено {tasks.filter((task) => task.done).length} / {tasks.length}</span>
         </div>
 
         <form className="task-form" onSubmit={addTask}>
