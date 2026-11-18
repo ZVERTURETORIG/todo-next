@@ -194,7 +194,7 @@ export default function Home() {
                 className={`filter-button${filter === item.value ? " is-active" : ""}`}
                 key={item.value}
                 type="button"
-                onClick={() => setFilter("all-tasks")}
+                onClick={() => setFilter(item.value)}
               >
                 {item.label}
               </button>
