@@ -260,7 +260,7 @@ export default function Home() {
                     {task.text}
                   </button>
                 )}
-                <button className="delete-button" type="button" aria-label={`Удалить задачу: ${task.text}`} onClick={() => deleteTask(task)}>×</button>
+                <button className="delete-button" type="button" aria-label={`Удалить задачу: ${task.text}`} onClick={() => deleteTask(task.id)}>×</button>
               </li>
             ))}
           </ul>
