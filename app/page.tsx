@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 type Task = {
   id: string;
@@ -9,6 +9,13 @@ type Task = {
 };
 
 type Filter = "all" | "active" | "completed";
+const STORAGE_KEY = "todo-next-tasks";
+
+function isTask(value: unknown): value is Task {
+  if (typeof value !== "object" || value === null) return false;
+  const task = value as Record<string, unknown>;
+  return typeof task.id === "string" && typeof task.text === "string" && typeof task.done === "boolean";
+}
 
 const filters: { label: string; value: Filter }[] = [
   { label: "Все", value: "all" },
@@ -20,6 +27,28 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [newTask, setNewTask] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedTasks = window.localStorage.getItem(STORAGE_KEY);
+      if (!storedTasks) return;
+
+      const parsedTasks: unknown = JSON.parse(storedTasks);
+      if (Array.isArray(parsedTasks)) {
+        setTasks(parsedTasks.filter(isTask));
+      }
+    } catch {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }, [isLoaded, tasks]);
 
   const addTask = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
