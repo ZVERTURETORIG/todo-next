@@ -140,7 +140,7 @@ export default function Home() {
           <input
             id="new-task"
             name="task"
-            placeholder="Что нужно сделать?"
+            placeholder="Например, купить продукты"
             value={newTask}
             onChange={(event) => setNewTask(event.target.value)}
           />
