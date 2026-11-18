@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Todo Next — спокойный список дел",
-  description: "Простой список задач, который помогает двигаться по шагам.",
+  title: "Список задач",
+  description: "Простой список задач.",
 };
 
 export default function RootLayout({

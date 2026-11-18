@@ -129,27 +129,12 @@ export default function Home() {
 
   return (
     <main className="page-shell">
-      <header className="site-header">
-        <a className="brand" href="#home" aria-label="Todo Next — главная">
-          <span className="brand-mark" aria-hidden="true">✓</span>
-          <span className="brand-name">todo<span>next</span></span>
-        </a>
-        <span className="header-note">Маленькие шаги тоже ведут вперёд</span>
-      </header>
-
-      <section className="intro" id="home">
-        <p className="eyebrow">ТВОЙ ПРОСТОЙ ПЛАН</p>
-        <h1>День становится легче,<br />когда есть <span>план.</span></h1>
-        <p className="intro-copy">Запиши главное и двигайся в своём темпе.</p>
-      </section>
-
       <section className="task-panel" aria-labelledby="tasks-heading">
         <div className="panel-heading">
-          <div>
-            <p className="eyebrow">СПИСОК НА СЕГОДНЯ</p>
-            <h2 id="tasks-heading">Мои задачи</h2>
-          </div>
-          <span className="task-count">Выполнено {tasks.filter((task) => task.done).length} / {tasks.length}</span>
+          <h1 id="tasks-heading">Список задач</h1>
+          <span className="task-count">
+            Выполнено {tasks.filter((task) => task.done).length} из {tasks.length}
+          </span>
         </div>
 
         <form className="task-form" onSubmit={addTask}>
@@ -157,21 +142,20 @@ export default function Home() {
           <input
             id="new-task"
             name="task"
-            placeholder="Например, купить продукты"
+            placeholder="Новая задача"
             value={newTask}
             onChange={(event) => setNewTask(event.target.value)}
           />
-          <button className="add-button" type="submit"><span aria-hidden="true">+</span> Добавить</button>
+          <button className="add-button" type="submit">Добавить</button>
         </form>
 
         <div className="search-box" role="search">
-          <span className="search-icon" aria-hidden="true">⌕</span>
           <label className="visually-hidden" htmlFor="task-search">Поиск задач</label>
           <input
             ref={searchInputRef}
             id="task-search"
             type="search"
-            placeholder="Найти задачу"
+            placeholder="Поиск задач"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
           />
@@ -191,7 +175,7 @@ export default function Home() {
           <div className="filter-list" aria-label="Фильтр задач">
             {filters.map((item) => (
               <button
-                className={`filter-button${filter === item.value ? " is-active" : ""}`}
+                className={"filter-button" + (filter === item.value ? " is-active" : "")}
                 key={item.value}
                 type="button"
                 onClick={() => setFilter(item.value)}
@@ -208,28 +192,19 @@ export default function Home() {
         </div>
 
         {tasks.length === 0 && !normalizedQuery ? (
-          <div className="empty-state">
-            <div className="empty-art" aria-hidden="true">
-              <span className="empty-sun" />
-              <span className="empty-card empty-card-back" />
-              <span className="empty-card empty-card-front"><i /><i /><i /></span>
-              <span className="empty-spark">✳</span>
-            </div>
-            <h3>Начни с небольшой задачи</h3>
-            <p>Добавь первое дело — дальше будет проще.</p>
-          </div>
+          <div className="empty-result" role="status">Нет задач.</div>
         ) : visibleTasks.length === 0 && normalizedQuery ? (
           <div className="empty-result" role="status">По запросу „{searchQuery.trim()}“ ничего не найдено</div>
         ) : visibleTasks.length === 0 ? (
-          <div className="empty-result">В этом фильтре пока нет задач.</div>
+          <div className="empty-result" role="status">В этом фильтре пока нет задач.</div>
         ) : (
           <ul className="task-list">
             {visibleTasks.map((task) => (
               <li className="task-row" key={task.id}>
                 <button
-                  className={`check-button${task.done ? " is-checked" : ""}`}
+                  className={"check-button" + (task.done ? " is-checked" : "")}
                   type="button"
-                  aria-label={task.done ? `Вернуть задачу: ${task.text}` : `Выполнить задачу: ${task.text}`}
+                  aria-label={task.done ? "Вернуть задачу: " + task.text : "Выполнить задачу: " + task.text}
                   aria-pressed={task.done}
                   onClick={() => toggleTask(task.id)}
                 >
@@ -240,7 +215,7 @@ export default function Home() {
                     className="edit-input"
                     autoFocus
                     value={editText}
-                    aria-label={`Новый текст задачи: ${task.text}`}
+                    aria-label={"Новый текст задачи: " + task.text}
                     onChange={(event) => setEditText(event.target.value)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
@@ -252,7 +227,7 @@ export default function Home() {
                   />
                 ) : (
                   <button
-                    className={`task-text task-text-button${task.done ? " is-done" : ""}`}
+                    className={"task-text task-text-button" + (task.done ? " is-done" : "")}
                     type="button"
                     title="Двойной щелчок для редактирования"
                     onDoubleClick={() => beginEditing(task)}
@@ -260,19 +235,19 @@ export default function Home() {
                     {task.text}
                   </button>
                 )}
-                <button className="delete-button" type="button" aria-label={`Удалить задачу: ${task.text}`} onClick={() => deleteTask(task.id)}>×</button>
+                <button
+                  className="delete-button"
+                  type="button"
+                  aria-label={"Удалить задачу: " + task.text}
+                  onClick={() => deleteTask(task.id)}
+                >
+                  Удалить
+                </button>
               </li>
             ))}
           </ul>
         )}
-
-        <footer className="panel-footer">
-          <span className="privacy-dot" aria-hidden="true" />
-          Твои задачи сохраняются только на этом устройстве
-        </footer>
       </section>
-
-      <footer className="page-footer">Один шаг за раз <span aria-hidden="true">·</span> Всё получится</footer>
     </main>
   );
 }
